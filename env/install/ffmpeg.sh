@@ -58,3 +58,5 @@ PATH="$HOME/bin:$PATH" make -j8
 make install
 make distclean
 hash -r
+
+ln -s /root/bin/ffmpeg /usr/bin/ffmpeg
