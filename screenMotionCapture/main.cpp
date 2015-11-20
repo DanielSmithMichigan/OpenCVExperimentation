@@ -85,24 +85,6 @@ Mat AddMatchesToImage(Mat img_object, Mat img_scene)
     return img_matches;
 }
 
-IplImage* XImage2IplImageAdapter(XImage *ximage)
-{
-        IplImage *iplImage;
-        assert(ximage->format == ZPixmap);
-        assert(ximage->depth == 24); 
-
-        iplImage = cvCreateImageHeader(
-                cvSize(ximage->width, ximage->height), 
-                IPL_DEPTH_8U,
-                ximage->bits_per_pixel/8);
-
-        iplImage->widthStep = ximage->bytes_per_line;
-        if(ximage->data != NULL)
-                iplImage->imageData = ximage->data;
-
-        return iplImage;
-}
-
 Mat ImageFromDisplay(int Width, int Height)
 {
     Display* display = XOpenDisplay(NULL);
