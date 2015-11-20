@@ -103,34 +103,30 @@ IplImage* XImage2IplImageAdapter(XImage *ximage)
         return iplImage;
 }
 
-IplImage* ImageFromDisplay(int x, int y, int width, int height)
+Mat ImageFromDisplay(int Width, int Height)
 {
     Display* display = XOpenDisplay(NULL);
     Window root = DefaultRootWindow(display);
-
     XWindowAttributes attributes = {0};
     XGetWindowAttributes(display, root, &attributes);
+    XImage* img = XGetImage(display, root, 0, 0 , Width, Height, AllPlanes, ZPixmap);
+    XFree(img);
+    XCloseDisplay(display);
+    return Mat(Height, Width, img->bits_per_pixel > 24 ? CV_8UC4 : CV_8UC3, img->data);
 
-    XImage* img = XGetImage(display, root, 0, 0 , width, height, AllPlanes, ZPixmap);
-    return XImage2IplImageAdapter(img);
 }
 
 int main(int argc, char** argv )
 {
     int width = 1500;
     int height = 500;
-    Mat object = imread(argv[1], CV_LOAD_IMAGE_GRAYSCALE );
-    IplImage *scene = ImageFromDisplay(0, 0, width, height);
-    Mat newScene =  cvarrToMat(scene);
-    Mat imageMatches = AddMatchesToImage(object, newScene);
 
-    if (width && height)
-    {
+    // Mat object = imread(argv[1], CV_LOAD_IMAGE_GRAYSCALE );
+    Mat scene = ImageFromDisplay(width, height);
+    // Mat imageMatches = AddMatchesToImage(object, scene);
+    namedWindow("WindowTitle", WINDOW_AUTOSIZE);
+    imshow("WindowTitle",  scene);
 
-        namedWindow("WindowTitle", WINDOW_AUTOSIZE);
-        imshow("WindowTitle",  imageMatches );
-
-        waitKey(0);
-    }
+    waitKey(0);
     return 0;
 }
