@@ -16,7 +16,7 @@ Mat ImageFromDisplay(int Width, int Height)
     Window root = DefaultRootWindow(display);
     XWindowAttributes attributes = {0};
     XGetWindowAttributes(display, root, &attributes);
-    XImage* img = XGetImage(display, root, 0, 0 , Width, Height, AllPlanes, ZPixmap);
+    XImage* img = XGetImage(display, root, 600, 600 , Width, Height, AllPlanes, ZPixmap);
     if (!img->data) {
         cout << "No image data";
         throw("No image data");
@@ -36,12 +36,13 @@ Mat MatchAgainst(Mat img_scene, Mat img_object, const Scalar& color, String Name
 {
     Mat result;
     matchTemplate( img_scene, img_object, result, CV_TM_SQDIFF_NORMED );
+    imshow( "ResultWindow", result);
     double minVal; double maxVal; Point minLoc; Point maxLoc;
     Point matchLoc;
 
     minMaxLoc( result, &minVal, &maxVal, &minLoc, &maxLoc, Mat() );
     cout << Name << ": " << minVal << endl;
-    if (minVal < .1) {
+    if (minVal < .25) {
         matchLoc = minLoc;
         rectangle( img_scene, matchLoc, Point( matchLoc.x + img_object.cols , matchLoc.y + img_object.rows ), color, 3 );
     }
@@ -50,20 +51,15 @@ Mat MatchAgainst(Mat img_scene, Mat img_object, const Scalar& color, String Name
 
 int main(int argc, char** argv )
 {
-    Mat tin = imread("../images/tin.png", CV_LOAD_IMAGE_COLOR);
+    Mat tin = imread("../images/drop.png", CV_LOAD_IMAGE_COLOR);
     if (!tin.data) {
-        throw("Error reading scene");
-    }
-    Mat tin_mined = imread("../images/tin_mined.png", CV_LOAD_IMAGE_COLOR);
-    if (!tin_mined.data) {
         throw("Error reading scene");
     }
     Mat img_scene;
     while(true) {
         waitKey(100);
-        Mat img_scene = ImageFromDisplay(800, 800);
+        Mat img_scene = ImageFromDisplay(300, 300);
         img_scene = MatchAgainst(img_scene, tin, CV_RGB(255, 255, 255), "TIN");
-        img_scene = MatchAgainst(img_scene, tin_mined, CV_RGB(255, 0, 0), "MINED");
         imshow( "Good Matches & Object detection", img_scene );
     }
     
