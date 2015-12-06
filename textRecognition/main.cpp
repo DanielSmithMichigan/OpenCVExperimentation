@@ -24,9 +24,11 @@ using namespace cv::text;
 int main(int argc, char* argv[])
 {
     Ptr<OCRTesseract> ocr = OCRTesseract::create();
-    cv::Mat img1 = imread("../images/letters.jpg");
+    cv::Mat img1 = imread("../images/resize.png");
 	cv::cvtColor(img1, img1, cv::COLOR_RGB2GRAY);
-	cv::threshold(img1, img1, 100, 255, THRESH_BINARY);
+	cv::threshold(img1, img1, 100, 255, THRESH_BINARY_INV);
+	imshow("W", img1);
+	cv::waitKey(100000);
     string output;
     ocr->run(img1, output);
     cout << output;

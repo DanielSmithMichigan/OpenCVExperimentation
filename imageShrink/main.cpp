@@ -1,49 +1,28 @@
 #include <iostream>
-#include <opencv2/highgui.hpp>
+#include <opencv2/core/core.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/features2d.hpp>
+#include <opencv2/text.hpp>
 
 using namespace std;
-using namespace cv;
-
-IplImage* shrink(IplImage* in) {
-	IplImage* out = cvCreateImage(cvSize(in->width/2, in->height/2), in->depth, in->nChannels);
-	cvPyrDown(in, out);
-	return out;
-}
-
-IplImage* getRed(IplImage *src) {
-	CvSize s = cvSize(src->width, src->height);
-	int d = src->depth;
-	IplImage* R = cvCreateImage(s, d, 1);
-	cvSplit(src, R, NULL, NULL, NULL);
-	return R;
-}
-
-IplImage* canny(IplImage* in,
-	double lowThresh,
-	double highThresh,
-	double aperture
-	) {
-	if(in->nChannels != 1) {
-		return 0;
-	}
-	IplImage* out = cvCreateImage(
-		cvSize(in->width, in->height),
-		IPL_DEPTH_8U,
-		1
-	);
-	cvCanny( in, out, lowThresh, highThresh, aperture );
-	return out;
-}
 
 int main(int argc, char** argv )
 {
-	IplImage *imageIn = cvLoadImage( argv[1] );
+	cv::Mat imageIn = cv::imread("../images/font.tif");
+	imshow("W", imageIn);
+	int width = imageIn.cols;
 	cvNamedWindow("ImageShrink");
-	imageIn = getRed(imageIn);
-	imageIn = canny(imageIn, 1, 100, 3);
-	cvShowImage("ImageShrink", imageIn);
-	cvReleaseImage(&imageIn);
-	cvWaitKey(0);
-	cvDestroyWindow("ImageShrink");
+	int threshold = 120;
+	int maxValue = 255;
+	int thresholdType = cv::THRESH_BINARY;
+	double ratio = 2.5;
+	cout << "Resizing with ratio: " << ratio << endl;
+	int newWidth = ratio * width;
+	int minHeight = imageIn.rows * ratio;
+	cv::resize(imageIn, imageIn, cv::Size(newWidth, minHeight), 0, 0, cv::INTER_NEAREST);
+	cv::cvtColor(imageIn, imageIn, cv::COLOR_RGB2GRAY);
+	cv::threshold(imageIn, imageIn, threshold, maxValue, thresholdType);
+	imwrite("../images/newFont.tif", imageIn);
 	return 0;
 }
