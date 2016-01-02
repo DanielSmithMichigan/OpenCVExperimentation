@@ -20,7 +20,7 @@ int main(int argc, char** argv )
 		return -1;
 	}
 
-	int minHessian = 400;
+	int minHessian = 100;
 	Ptr<SURF> surf = SURF::create(minHessian);
 	vector<KeyPoint> keypoints_object, keypoints_scene;
 	Mat descriptors_object, descriptors_scene;
