@@ -18,7 +18,7 @@ int erosion_type;
 
 int main(int argc, char** argv )
 {
-	cv::Mat imageIn = cv::imread("../images/bank.png");
+	cv::Mat imageIn = cv::imread(argv[1]);
 	cv::Mat imageOut;
 	imshow("BEFORE", imageIn);
 	cv::cvtColor(imageIn,imageIn,cv::COLOR_BGR2HSV);
